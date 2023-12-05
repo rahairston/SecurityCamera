@@ -5,6 +5,7 @@ from streamer import Streamer
 from detector import Detector
 from recorder import Recorder
 from storage import Storage
+from ast import literal_eval
 import threading
 import datetime
 import socket
@@ -66,7 +67,7 @@ if __name__ == '__main__':
         raise Exception("Did you forget to enable the streamer and/or recorder in config.json?")
 
     camera_fps = stored_data["camera_fps"]
-    camera_resolution = stored_data["camera_resolution"]
+    camera_resolution = literal_eval(stored_data["camera_resolution"])
     camera_vFlip = stored_data['camera_vFlip']
     camera_HFlip = stored_data['camera_hFlip']
     camera_denoise = stored_data['camera_denoise']
