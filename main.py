@@ -13,6 +13,7 @@ import json
 import time
 import sys
 import os
+import cv2
 
 # Maximum amount of attempts to connect to the internet.
 # Exit if this is exceeded.
