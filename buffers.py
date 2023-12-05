@@ -1,5 +1,5 @@
 from general import WebSocketHandler
-from picamera import PiCamera, PiVideoFrameType
+from picamera2 import Picamera2, PiVideoFrameType
 import numpy as np
 import cv2
 import io

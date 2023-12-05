@@ -1,5 +1,5 @@
 from general import get_exec_dir, has_internet_connectivity
-from picamera import PiCamera, Color
+from picamera2 import Picamera2, Color
 from streamer import Streamer
 from detector import Detector
 from recorder import Recorder
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     annotate_time = stored_data['annotate_time']
 
     # Create and configure the camera.
-    camera = PiCamera(resolution=camera_resolution, framerate=camera_fps)
+    camera = Picamera2(resolution=camera_resolution, framerate=camera_fps)
     camera.vflip = camera_vFlip
     camera.hflip = camera_HFlip
     camera.video_denoise = camera_denoise

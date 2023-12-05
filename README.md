@@ -3,6 +3,8 @@
 
 # Raspberry Pi security camera system.
 
+Forked from a normal picamera library. This will update to support picamera2 library (Pi Camera module 3)
+
 A Raspberry Pi camera system with a live video feed, motion detection system, H.264 mp4 recording capabilities and a storage management system with support for remote storage. <br>
 The recorder supports pre-motion frame recording and no internet environments (e.g. Wildlife cameras). 
 
@@ -41,7 +43,8 @@ Confirmed working on Raspberry Pi 3b, 3b+, 4. Other versions will probably work,
   - `git clone https://github.com/Ruud14/SecurityCamera.git`
   
 ### How to run
-- Assuming you are in the cloned repository directory, **you can run the full script by running `python3 main.py`**. But first make sure all necessary packages are installed: `pip3 install -r requirements.txt`.
+- Assuming you are in the cloned repository directory, **you can run the full script by running `python3 main.py`**. But first make sure all necessary packages are installed via 
+```sudo apt install python3-chardet python3-numpy python3-picamera2 python3-requestspython3-six ssh-import-id 6python3-tornado python3-urllib3```.
 - If the default settings don't fit your needs, you should follow the *configuration guide* below.
 - Stream:
     - The live stream can be accessed on `http://<local_pi_ip>:8000/index.html` as long as `streamer_active` is set to `true` in the configuration file. Don't forget to replace `<local_pi_ip>` with the local IP address of your Raspberry Pi.

@@ -1,4 +1,5 @@
-from picamera import PiCamera, PiCameraCircularIO
+from picamera2 import Picamera2
+from picamera2.outputs import CircularOutput
 from general import get_exec_dir
 import subprocess
 import threading
@@ -24,14 +25,14 @@ class Recorder:
         self.ffmpeg_path = ffmpeg_path
         self.convert_h264_to_mp4 = convert_h264_to_mp4
 
-        # Make sure PiCameraCircularIO contains at least 20 seconds of footage. Since this is the minimum for it work.
+        # Make sure CircularOutput contains at least 20 seconds of footage. Since this is the minimum for it work.
         if record_seconds_before_motion > 20:
             delayed_storage_length_seconds = record_seconds_before_motion
         else:
             delayed_storage_length_seconds = 20
         # Create the delayed frames stream.
-        self.delayed_recording_stream = PiCameraCircularIO(self.camera, seconds=delayed_storage_length_seconds)
-        # For some reason the PiCameraCircularIO has to be on splitter_port 1. Splitter port 2 or 3 doesn't work.
+        self.delayed_recording_stream = CircularOutput(self.camera, seconds=delayed_storage_length_seconds)
+        # For some reason the CircularOutput has to be on splitter_port 1. Splitter port 2 or 3 doesn't work.
         self.camera.start_recording(self.delayed_recording_stream, splitter_port=1, **h264_args)
 
     # Method to call when there is motion.
