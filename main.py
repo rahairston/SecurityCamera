@@ -1,5 +1,6 @@
 from general import get_exec_dir, has_internet_connectivity
 from picamera2 import Picamera2
+from libcamera import controls, Transform
 from streamer import Streamer
 from detector import Detector
 from recorder import Recorder
@@ -71,11 +72,19 @@ if __name__ == '__main__':
     camera_denoise = stored_data['camera_denoise']
     annotate_time = stored_data['annotate_time']
 
+    video_config = camera.create_video_configuration(
+        main=camera_resolution, 
+        controls={
+            "FrameRate": camera_fps
+        },
+        "transform": Transform(hflip=camera_HFlip, vflip=camera_vFlip)
+    )
+
     # Create and configure the camera.
-    camera = Picamera2(resolution=camera_resolution, framerate=camera_fps)
-    camera.vflip = camera_vFlip
-    camera.hflip = camera_HFlip
-    camera.video_denoise = camera_denoise
+    camera = Picamera2(video_config)
+    #camera.vflip = camera_vFlip
+    #camera.hflip = camera_HFlip
+    #camera.video_denoise = camera_denoise
 
     # Annotate the current date and time in the recording.
     if annotate_time:
