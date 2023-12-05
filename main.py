@@ -99,8 +99,8 @@ if __name__ == '__main__':
         scale = 1
         thickness = 2
         camera.configure(camera.create_preview_configuration())
+        camera.start_preview()
         overlay = np.zeros((640, 480, 4), dtype=np.uint8)
-       
         camera.set_overlay(overlay)
 
         def annotate_time():
