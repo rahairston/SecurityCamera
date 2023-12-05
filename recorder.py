@@ -31,7 +31,7 @@ class Recorder:
         else:
             delayed_storage_length_seconds = 20
         # Create the delayed frames stream.
-        buffersize = delayed_storage_length_seconds * camera.video_configuration.controls.FrameRate
+        buffersize = delayed_storage_length_seconds * camera.video_configuration.controls.["FrameRate"]
         self.delayed_recording_stream = CircularOutput(buffersize=buffersize)
         # For some reason the CircularOutput has to be on splitter_port 1. Splitter port 2 or 3 doesn't work.
         self.camera.start_recording(self.delayed_recording_stream, splitter_port=1, **h264_args)
