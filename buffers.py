@@ -1,5 +1,5 @@
 from general import WebSocketHandler
-from picamera2 import Picamera2, PiVideoFrameType
+from picamera2 import Picamera2
 import numpy as np
 import cv2
 import io
@@ -16,7 +16,7 @@ class StreamBuffer(object):
         self.loop = loop
 
     def write(self, buf):
-        if self.camera.frame.complete and self.camera.frame.frame_type != PiVideoFrameType().sps_header:
+        if self.camera.frame.complete and self.camera.frame.frame_type != 2:
             self.buffer.write(buf)
             frame = self.buffer.getvalue()
             if self.loop is not None and WebSocketHandler.hasConnections():

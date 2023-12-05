@@ -1,5 +1,5 @@
 from general import get_exec_dir, has_internet_connectivity
-from picamera2 import Picamera2, Color
+from picamera2 import Picamera2
 from streamer import Streamer
 from detector import Detector
 from recorder import Recorder
@@ -79,11 +79,19 @@ if __name__ == '__main__':
 
     # Annotate the current date and time in the recording.
     if annotate_time:
-        camera.annotate_background = Color('black')
+        colour = (0, 255, 0, 255)
+        origin = (0, 30)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        scale = 1
+        thickness = 2
+        overlay = np.zeros((640, 480, 4), dtype=np.uint8)
+       
+        camera.set_overlay(overlay)
 
         def annotate_time():
             while True:
-                camera.annotate_text = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                time_left = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                cv2.putText(overlay, str(time_left), origin, font, scale, colour, thickness)
                 time.sleep(1)
 
         threading.Thread(target=annotate_time).start()
