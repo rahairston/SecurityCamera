@@ -41,6 +41,8 @@ def wait_for_internet():
             raise socket.error("No internet connection could be established "
                                "within the first {} seconds of running.".format(MAX_INTERNET_CONNECT_ATTEMPTS))
 
+def tuple_from_resolution(res):
+    return tuple(map(int, res.split("x")))
 
 # Run if this script is run on its own.
 if __name__ == '__main__':
@@ -67,7 +69,7 @@ if __name__ == '__main__':
         raise Exception("Did you forget to enable the streamer and/or recorder in config.json?")
 
     camera_fps = stored_data["camera_fps"]
-    camera_resolution = literal_eval(stored_data["camera_resolution"])
+    camera_resolution = tuple_from_resolution(stored_data["camera_resolution"])
     camera_vFlip = stored_data['camera_vFlip']
     camera_HFlip = stored_data['camera_hFlip']
     camera_denoise = stored_data['camera_denoise']
@@ -118,7 +120,7 @@ if __name__ == '__main__':
         storage_option = stored_data['storage_option']
         max_local_storage_capacity = stored_data['max_local_storage_capacity']
 
-        detection_resolution = tuple(map(int, stored_data['detection_resolution'].split("x")))
+        detection_resolution = tuple_from_resolution(stored_data['detection_resolution'])
         convert_h264_to_mp4 = stored_data['convert_h264_to_mp4']
 
         if storage_option != 'local':
@@ -156,7 +158,7 @@ if __name__ == '__main__':
     # Start the streamer.
     if streamer_active:
         wait_for_internet()
-        stream_resolution = stored_data["stream_resolution"]
+        stream_resolution = tuple_from_resolution(stored_data["stream_resolution"])
         streamer = Streamer(camera=camera,
                             streaming_resolution=stream_resolution,
                             h264_args=h264_stream_and_record_args,
