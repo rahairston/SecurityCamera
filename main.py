@@ -98,6 +98,7 @@ if __name__ == '__main__':
         font = cv2.FONT_HERSHEY_SIMPLEX
         scale = 1
         thickness = 2
+        camera.configure(camera.create_preview_configuration())
         overlay = np.zeros((640, 480, 4), dtype=np.uint8)
        
         camera.set_overlay(overlay)
