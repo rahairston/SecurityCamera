@@ -77,7 +77,7 @@ if __name__ == '__main__':
         controls={
             "FrameRate": camera_fps
         },
-        "transform": Transform(hflip=camera_HFlip, vflip=camera_vFlip)
+        transform=Transform(hflip=camera_HFlip, vflip=camera_vFlip)
     )
 
     # Create and configure the camera.
