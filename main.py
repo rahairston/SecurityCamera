@@ -78,7 +78,7 @@ if __name__ == '__main__':
     #camera.video_denoise = camera_denoise
     camera = Picamera2()
     video_config = camera.create_video_configuration(
-        main=camera_resolution, 
+        main={"size": camera_resolution}, 
         controls={
             "FrameRate": camera_fps
         },
