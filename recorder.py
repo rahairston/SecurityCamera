@@ -7,6 +7,7 @@ import threading
 import datetime
 import time
 import os
+import numpy as np
 
 
 # Class that handles the recording.
