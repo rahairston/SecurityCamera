@@ -58,6 +58,7 @@ if __name__ == '__main__':
 
     camera_fps = stored_data["camera_fps"]
     camera_resolution = tuple_from_resolution(stored_data["camera_resolution"])
+    detection_resolution = tuple_from_resolution(stored_data['detection_resolution'])
     camera_vFlip = stored_data['camera_vFlip']
     camera_HFlip = stored_data['camera_hFlip']
     camera_denoise = stored_data['camera_denoise']
@@ -65,9 +66,8 @@ if __name__ == '__main__':
 
     # Create and configure the camera.
     camera = Picamera2()
-    lsize = (camera_resolution[0] / 4, camera_resolution[0] / 4)
     video_config = camera.create_video_configuration(
-        main={"size": camera_resolution, "format": "RGB888"},lores={"size": lsize, "format": "YUV420"},
+        main={"size": camera_resolution, "format": "RGB888"},lores={"size": detection_resolution, "format": "YUV420"},
         transform=Transform(hflip=camera_HFlip, vflip=camera_vFlip)
     )
     camera.configure(video_config)
@@ -104,7 +104,6 @@ if __name__ == '__main__':
         storage_option = stored_data['storage_option']
         max_local_storage_capacity = stored_data['max_local_storage_capacity']
 
-        detection_resolution = tuple_from_resolution(stored_data['detection_resolution'])
         convert_h264_to_mp4 = stored_data['convert_h264_to_mp4']
 
         if storage_option != 'local':
@@ -127,8 +126,7 @@ if __name__ == '__main__':
 
         detector = Detector(camera=camera,
                             recorder=recorder,
-                            motion_threshold=motion_threshold,
-                            detection_resolution=detection_resolution)
+                            motion_threshold=motion_threshold)
 
         detector.start()
         if not streamer_active:

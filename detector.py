@@ -6,12 +6,11 @@ import cv2
 
 # Class that handles the detection of motion in the live camera feed.
 class Detector:
-    def __init__(self, camera, recorder, motion_threshold=20, detection_resolution=(64, 48)):
+    def __init__(self, camera, recorder, motion_threshold=20):
         self.camera = camera
         self.recorder = recorder
         # The motion threshold. Higher number = less detection.
         self.motion_threshold = motion_threshold
-        self.detection_resolution = detection_resolution
         self.detection_buffer = DetectionBuffer(self.detect_motion)
         self.encoder = recorder.encoder
 
