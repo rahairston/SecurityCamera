@@ -2,7 +2,6 @@ from general import get_exec_dir, has_internet_connectivity
 from picamera2 import Picamera2
 from libcamera import controls, Transform
 from streamer import Streamer
-from detector import Detector
 from recorder import Recorder
 from storage import Storage
 from ast import literal_eval
@@ -124,11 +123,7 @@ if __name__ == '__main__':
                             ffmpeg_path=ffmpeg_path,
                             convert_h264_to_mp4=convert_h264_to_mp4)
 
-        detector = Detector(camera=camera,
-                            recorder=recorder)
-
-        detector.start()
-        threading.Thread(target=detector.detect_motion).start()
+        threading.Thread(target=recorder.detect_motion).start()
         if not streamer_active:
             while True:
                 try:

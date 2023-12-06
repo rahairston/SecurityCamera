@@ -37,7 +37,27 @@ class Recorder:
         self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
         self.encoder.output = [self.delayed_recording_stream]
         self.camera.encoders = self.encoder
+        self.camera.start()
         self.camera.start_encoder()
+
+    def detect_motion(self):
+        w, h = self.camera.video_configuration.lores.size
+        prev = None
+        encoding = False
+        ltime = 0
+
+        while True:
+            cur = self.camera.capture_buffer("lores")
+            cur = cur[:w * h].reshape(h, w)
+            if prev is not None:
+                # Measure pixels differences between current and
+                # previous frame
+                mse = np.square(np.subtract(cur, prev)).mean()
+                if mse > 7:
+                    encoding = True
+                    self.report_motion()
+                    print("New Motion", mse)
+            prev = cur
 
     # Method to call when there is motion.
     # This will start the recording if it hadn't already been started.
