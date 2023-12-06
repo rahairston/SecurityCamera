@@ -36,7 +36,7 @@ class Recorder:
         filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp.h264")
         self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
         self.encoder.output = [self.delayed_recording_stream]
-        self.camera.encoders = encoder
+        self.camera.encoders = self.encoder
         self.camera.start_encoder()
 
     # Method to call when there is motion.
