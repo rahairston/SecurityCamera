@@ -28,14 +28,14 @@ class Recorder:
         self.encoder = H264Encoder(1000000, repeat=True, framerate=camera_fps)
 
         # Create the pre-motion buffer.
-        buffersize = record_seconds_before_motion * camera.controls.FrameRate
-        print("Buffer size: ", buffersize, "Framerate:", camera.controls.FrameRate)
+        buffersize = record_seconds_before_motion * camera_fps
         filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp.h264")
         self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
         self.encoder.output = [self.delayed_recording_stream]
         self.camera.encoders = self.encoder
         self.camera.start()
         self.camera.start_encoder()
+        print("Framerate:", self.camera.controls.FrameRate)
 
     def detect_motion(self):
         print("Motion Detection Started...")
