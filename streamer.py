@@ -59,7 +59,8 @@ class Streamer:
             output = StreamingOutput()
 
             # Start sending frames to the streaming thread.
-            self.camera.encoders[0].append(output)
+            for encoder in self.camera.encoders
+                encoder.append(output)
 
             # Create and loop the tornado application.
             application = tornado.web.Application(self.request_handlers)
