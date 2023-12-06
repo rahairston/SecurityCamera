@@ -29,8 +29,7 @@ class Recorder:
 
         # Create the pre-motion buffer.
         buffersize = record_seconds_before_motion * camera_fps
-        filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp.h264")
-        self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
+        self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize))
         self.encoder.output = [self.delayed_recording_stream]
         self.camera.encoders = self.encoder
         self.camera.start()
@@ -70,10 +69,9 @@ class Recorder:
         if not os.path.isdir(os.path.join(get_exec_dir(), self.temporary_recordings_output_path)):
             os.mkdir(os.path.join(get_exec_dir(), self.temporary_recordings_output_path))
         output_file_name = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, current_time_string) + ".h264"
-        print('Started recording '+output_file_name)
         self.delayed_recording_stream.fileoutput = output_file_name
         self.delayed_recording_stream.start()
-
+        print('Started recording '+output_file_name)
         threading.Thread(target=self._start_countdown, args=(output_file_name,), daemon=True).start()
 
     # Starts counting down from record_seconds_after_movement after movement is detected.
