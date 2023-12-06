@@ -72,24 +72,24 @@ if __name__ == '__main__':
     camera.configure(video_config)
 
     # Annotate the current date and time in the recording.
-    # if annotate_time:
-    #     colour = (0, 255, 0, 255)
-    #     origin = (0, 30)
-    #     font = cv2.FONT_HERSHEY_SIMPLEX
-    #     scale = 1
-    #     thickness = 2
+    if annotate_time:
+        colour = (0, 255, 0, 255)
+        origin = (0, 30)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        scale = 1
+        thickness = 2
     #     camera.configure(camera.create_preview_configuration())
-    #     camera.start_preview()
-    #     overlay = np.zeros((640, 480, 4), dtype=np.uint8)
-    #     camera.set_overlay(overlay)
+        camera.start_preview()
+        overlay = np.zeros((640, 480, 4), dtype=np.uint8)
+        camera.set_overlay(overlay)
 
-    #     def annotate_time():
-    #         while True:
-    #             time_left = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    #             cv2.putText(overlay, str(time_left), origin, font, scale, colour, thickness)
-    #             time.sleep(1)
+        def annotate_time():
+            while True:
+                time_left = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                cv2.putText(overlay, str(time_left), origin, font, scale, colour, thickness)
+                time.sleep(1)
 
-    #     threading.Thread(target=annotate_time).start()
+        threading.Thread(target=annotate_time).start()
 
     # Start the recorder.
     if recorder_active:
