@@ -125,8 +125,7 @@ if __name__ == '__main__':
                             convert_h264_to_mp4=convert_h264_to_mp4)
 
         detector = Detector(camera=camera,
-                            recorder=recorder,
-                            motion_threshold=motion_threshold)
+                            recorder=recorder)
 
         detector.start()
         threading.Thread(target=detector.detect_motion).start()
