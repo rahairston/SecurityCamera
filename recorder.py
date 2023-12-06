@@ -1,5 +1,6 @@
 from picamera2 import Picamera2
 from picamera2.outputs import CircularOutput
+from picamera2.encoders import H264Encoder
 from general import get_exec_dir
 import subprocess
 import threading
@@ -10,13 +11,12 @@ import os
 
 # Class that handles the recording.
 class Recorder:
-    def __init__(self, camera, storage, h264_args,
+    def __init__(self, camera, storage, camera_fps,
                  temporary_recordings_output_path="./temp_recordings/",
                  record_seconds_after_motion=12, max_recording_seconds=600,
                  record_seconds_before_motion=5, ffmpeg_path="/usr/local/bin/ffmpeg", convert_h264_to_mp4=True):
         self.camera = camera
         self.storage = storage
-        self.h264_args = h264_args
         self.temporary_recordings_output_path = temporary_recordings_output_path
         self.record_seconds_after_motion = record_seconds_after_motion
         self.max_recording_seconds = max_recording_seconds
@@ -24,6 +24,7 @@ class Recorder:
         self.record_seconds_before_motion = record_seconds_before_motion
         self.ffmpeg_path = ffmpeg_path
         self.convert_h264_to_mp4 = convert_h264_to_mp4
+        self.encoder = H264Encoder(framerate=camera_fps)
 
         # Make sure CircularOutput contains at least 20 seconds of footage. Since this is the minimum for it work.
         if record_seconds_before_motion > 20:
@@ -31,11 +32,10 @@ class Recorder:
         else:
             delayed_storage_length_seconds = 20
         # Create the delayed frames stream.
-        buffersize = delayed_storage_length_seconds * camera.controls.FrameRate
-        print(buffersize)
-        self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize))
-        # For some reason the CircularOutput has to be on splitter_port 1. Splitter port 2 or 3 doesn't work.
-        self.camera.start_recording(self.delayed_recording_stream, splitter_port=1, **h264_args)
+        buffersize = delayed_storage_length_seconds * camera.controls.FrameRate[0]
+        filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp")
+        self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
+        self.camera.start_recording(self.encoder, self.delayed_recording_stream)
 
     # Method to call when there is motion.
     # This will start the recording if it hadn't already been started.

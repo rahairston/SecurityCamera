@@ -48,7 +48,7 @@ class Streamer:
             stream_buffer = StreamBuffer(self.camera)
 
             # Start sending frames to the streaming thread.
-            self.camera.start_recording(stream_buffer, splitter_port=2, **self.h264_args, resize=self.streaming_resolution)
+            self.camera.start_recording(stream_buffer, **self.h264_args, resize=self.streaming_resolution)
 
             # Create and loop the tornado application.
             application = tornado.web.Application(self.request_handlers)

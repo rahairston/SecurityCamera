@@ -20,20 +20,6 @@ import numpy as np
 # Exit if this is exceeded.
 MAX_INTERNET_CONNECT_ATTEMPTS = 100
 
-# H262 configuration
-h264_stream_and_record_args = {
-    'format': 'h264',
-    #'bitrate': 25000000,
-    'quality': 25,
-    'profile': 'high',
-    'level': '4.2',
-    'intra_period': 15,
-    'intra_refresh': 'both',
-    'inline_headers': True,
-    'sps_timing': True
-}
-
-
 def wait_for_internet():
     current_internet_connect_attempts = 0
     while not has_internet_connectivity():
@@ -78,15 +64,9 @@ if __name__ == '__main__':
     annotate_time = stored_data['annotate_time']
 
     # Create and configure the camera.
-    #camera.vflip = camera_vFlip
-    #camera.hflip = camera_HFlip
-    #camera.video_denoise = camera_denoise
     camera = Picamera2()
     video_config = camera.create_video_configuration(
-        main={"size": camera_resolution}, 
-        controls={
-            "FrameRate": camera_fps
-        },
+        main={"size": camera_resolution},
         transform=Transform(hflip=camera_HFlip, vflip=camera_vFlip)
     )
     camera.configure(video_config)
@@ -136,7 +116,7 @@ if __name__ == '__main__':
 
         recorder = Recorder(camera=camera,
                             storage=storage,
-                            h264_args=h264_stream_and_record_args,
+                            camera_fps=camera_fps,
                             temporary_recordings_output_path=temporary_recordings_output_path,
                             record_seconds_after_motion=record_seconds_after_motion,
                             max_recording_seconds=max_recording_seconds,
@@ -144,10 +124,10 @@ if __name__ == '__main__':
                             ffmpeg_path=ffmpeg_path,
                             convert_h264_to_mp4=convert_h264_to_mp4)
 
-        detector = Detector(camera=camera,
-                            recorder=recorder,
-                            motion_threshold=motion_threshold,
-                            detection_resolution=detection_resolution)
+        # detector = Detector(camera=camera,
+        #                     recorder=recorder,
+        #                     motion_threshold=motion_threshold,
+        #                     detection_resolution=detection_resolution)
 
         detector.start()
         if not streamer_active:
@@ -164,6 +144,6 @@ if __name__ == '__main__':
         stream_resolution = tuple_from_resolution(stored_data["stream_resolution"])
         streamer = Streamer(camera=camera,
                             streaming_resolution=stream_resolution,
-                            h264_args=h264_stream_and_record_args,
+                            camera_fps=camera_fps,
                             fps=camera_fps, )
         streamer.start()
