@@ -27,14 +27,9 @@ class Recorder:
         self.convert_h264_to_mp4 = convert_h264_to_mp4
         self.encoder = H264Encoder(1000000, repeat=True, framerate=camera_fps)
 
-        # Make sure CircularOutput contains at least 20 seconds of footage. Since this is the minimum for it work.
-        if record_seconds_before_motion > 20:
-            delayed_storage_length_seconds = record_seconds_before_motion
-        else:
-            delayed_storage_length_seconds = 20
-        # Create the delayed frames stream.
-        buffersize = delayed_storage_length_seconds * camera.controls.FrameRate
-        print("Buffer size: ", buffersize)
+        # Create the pre-motion buffer.
+        buffersize = record_seconds_before_motion * camera.controls.FrameRate
+        print("Buffer size: ", buffersize, "Framerate:", camera.controls.FrameRate)
         filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp.h264")
         self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
         self.encoder.output = [self.delayed_recording_stream]
