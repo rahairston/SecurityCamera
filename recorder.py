@@ -55,9 +55,8 @@ class Recorder:
                 # previous frame
                 mse = np.square(np.subtract(cur, prev)).mean()
                 if mse > 7:
-                    encoding = True
-                    self.report_motion()
                     print("New Motion", mse)
+                    self.report_motion()
             prev = cur
 
     # Method to call when there is motion.
@@ -79,7 +78,7 @@ class Recorder:
             os.mkdir(os.path.join(get_exec_dir(), self.temporary_recordings_output_path))
         output_file_name = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, current_time_string)
         print('Started recording '+output_file_name)
-        circ.fileoutput = output_file_name
+        self.delayed_recording_stream.fileoutput = output_file_name
         self.delayed_recording_stream.start()
 
         threading.Thread(target=self._start_countdown, args=(output_file_name), daemon=True).start()
