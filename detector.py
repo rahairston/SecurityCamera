@@ -12,6 +12,7 @@ class Detector:
         self.motion_threshold = motion_threshold
         self.detection_resolution = detection_resolution
         self.detection_buffer = DetectionBuffer(self.detect_motion)
+        config = self.camera.create_video_configuration({"size": (1600, 1200)}, lores={"size": (64, 48)})
         mjpeg_encoder = MJPEGEncoder()
         mjpeg_encoder.framerate = 15
         mjpeg_encoder.size = config["lores"]["size"]
