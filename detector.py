@@ -20,7 +20,7 @@ class Detector:
     # Calculates the difference between previous_frame and current_frame.
     # Reports motion to the recorder if the difference exceeds the threshold.
     def detect_motion(self):
-        w, h = lsize
+        w, h = self.camera.video_configuration["lores"]["size"]
         prev = None
         encoding = False
         ltime = 0
@@ -33,13 +33,7 @@ class Detector:
                 # previous frame
                 mse = np.square(np.subtract(cur, prev)).mean()
                 if mse > 7:
-                    if not encoding:
-                        encoding = True
-                        self.recorder.report_motion()
-                        print("New Motion", mse)
-                    ltime = time.time()
-                else:
-                    if encoding and time.time() - ltime > 5.0:
-                        circ.stop()
-                        encoding = False
+                    encoding = True
+                    self.recorder.report_motion()
+                    print("New Motion", mse)
             prev = cur
