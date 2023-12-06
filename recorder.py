@@ -58,13 +58,14 @@ class Recorder:
             os.mkdir(os.path.join(get_exec_dir(), self.temporary_recordings_output_path))
         output_file_name = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, current_time_string)
         print('Started recording '+output_file_name)
+        circ.fileoutput = output_file_name
         self.delayed_recording_stream.start()
 
         threading.Thread(target=self._start_countdown, args=(output_file_name), daemon=True).start()
 
     # Starts counting down from record_seconds_after_movement after movement is detected.
     # Stop recording if the timer gets to 0.
-    def _start_countdown(self, output_file_name,):
+    def _start_countdown(self, output_file_name):
         self.timer = self.record_seconds_after_motion
         recorded_time = 0
         while self.timer > 0 and not recorded_time > self.max_recording_seconds:
@@ -74,10 +75,6 @@ class Recorder:
 
         # Stop the delayed stream
         self.delayed_recording_stream.stop()
-        filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path)
-        temp_name = os.path.join(filename, "temp.h264")
-        os.rename(filename + "/temp.h264", output_file_name)
-
         # Put the h264 recording into an mp4 container.
         if self.convert_h264_to_mp4:
             output_file_name = self._put_in_mp4_container(output_file_name)

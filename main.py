@@ -129,6 +129,7 @@ if __name__ == '__main__':
                             motion_threshold=motion_threshold)
 
         detector.start()
+        threading.Thread(target=detector.detect_motion).start()
         if not streamer_active:
             while True:
                 try:
