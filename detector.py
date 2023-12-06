@@ -1,8 +1,6 @@
-from buffers import DetectionBuffer
 from picamera2.encoders import MJPEGEncoder
 from picamera2.outputs import FileOutput
 import cv2
-
 
 # Class that handles the detection of motion in the live camera feed.
 class Detector:
