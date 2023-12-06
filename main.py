@@ -65,8 +65,9 @@ if __name__ == '__main__':
 
     # Create and configure the camera.
     camera = Picamera2()
+    lsize = (camera_resolution[0] / 4, camera_resolution[0] / 4)
     video_config = camera.create_video_configuration(
-        main={"size": camera_resolution},
+        main={"size": camera_resolution, "format": "RGB888"},lores={"size": lsize, "format": "YUV420"},
         transform=Transform(hflip=camera_HFlip, vflip=camera_vFlip)
     )
     camera.configure(video_config)

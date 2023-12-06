@@ -13,22 +13,12 @@ class Detector:
         self.motion_threshold = motion_threshold
         self.detection_resolution = detection_resolution
         self.detection_buffer = DetectionBuffer(self.detect_motion)
-        config = self.camera.create_video_configuration({"size": (1600, 1200)}, lores={"size": (64, 48)})
-        mjpeg_encoder = MJPEGEncoder()
-        mjpeg_encoder.framerate = 15
-        mjpeg_encoder.size = config["lores"]["size"]
-        mjpeg_encoder.format = config["lores"]["format"]
-        mjpeg_encoder.bitrate = 5000000
-        mjpeg_encoder.output = FileOutput()
-        self.encoder = mjpeg_encoder
+        self.encoder = recorder.encoder
 
     # Start the detector.
     def start(self):
         # Start recording to the detection buffer.
-        self.camera.start_recording(
-            self.encoder,
-            output=FileOutput()
-        )
+        self.camera.start()
         # Let the user know that the detector started successfully.
         print("Motion detector started successfully!")
 
