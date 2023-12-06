@@ -35,7 +35,6 @@ class Recorder:
         self.camera.encoders = self.encoder
         self.camera.start()
         self.camera.start_encoder()
-        print("Framerate:", self.camera.controls.FrameRate)
 
     def detect_motion(self):
         print("Motion Detection Started...")
