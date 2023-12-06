@@ -34,6 +34,7 @@ class Recorder:
             delayed_storage_length_seconds = 20
         # Create the delayed frames stream.
         buffersize = delayed_storage_length_seconds * camera.controls.FrameRate
+        print("Buffer size: ", buffersize)
         filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp.h264")
         self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
         self.encoder.output = [self.delayed_recording_stream]
@@ -42,11 +43,9 @@ class Recorder:
         self.camera.start_encoder()
 
     def detect_motion(self):
+        print("Motion Detection Started...")
         w, h = self.camera.video_configuration.lores.size
         prev = None
-        encoding = False
-        ltime = 0
-
         while True:
             cur = self.camera.capture_buffer("lores")
             cur = cur[:w * h].reshape(h, w)
