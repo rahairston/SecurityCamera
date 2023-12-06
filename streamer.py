@@ -6,6 +6,15 @@ from string import Template
 import socket
 import os
 
+class StreamingOutput(io.BufferedIOBase):
+    def __init__(self):
+        self.frame = None
+        self.condition = Condition()
+
+    def write(self, buf):
+        with self.condition:
+            self.frame = buf
+            self.condition.notify_all()
 
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
@@ -48,7 +57,7 @@ class Streamer:
             output = StreamingOutput()
 
             # Start sending frames to the streaming thread.
-            self.camera.start_recording(stream_buffer, encoder=self.encoder, resize=self.streaming_resolution)
+            self.camera.encoders[0].append(output)
 
             # Create and loop the tornado application.
             application = tornado.web.Application(self.request_handlers)
@@ -59,6 +68,5 @@ class Streamer:
             loop.start()
 
         except KeyboardInterrupt:
-            self.camera.stop_recording()
             self.camera.close()
             loop.stop()
