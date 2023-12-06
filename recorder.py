@@ -32,7 +32,7 @@ class Recorder:
         else:
             delayed_storage_length_seconds = 20
         # Create the delayed frames stream.
-        buffersize = delayed_storage_length_seconds * camera.controls.FrameRate[0]
+        buffersize = delayed_storage_length_seconds * camera.controls.FrameRate
         filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp.h264")
         self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
         self.encoder.output = [self.delayed_recording_stream]
