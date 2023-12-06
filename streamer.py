@@ -3,6 +3,7 @@ from general import WebSocketHandler, get_exec_dir, get_file_content
 from buffers import StreamBuffer
 from picamera2.encoders import H264Encoder
 from string import Template
+from threading import Condition
 import socket
 import os
 import io
