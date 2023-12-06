@@ -25,7 +25,7 @@ class Recorder:
         self.record_seconds_before_motion = record_seconds_before_motion
         self.ffmpeg_path = ffmpeg_path
         self.convert_h264_to_mp4 = convert_h264_to_mp4
-        self.encoder = H264Encoder(1000000, repeat=True, framerate=camera_fps)
+        self.encoder = H264Encoder(1000000, repeat=True, iperiod=camera_fps, framerate=camera_fps, enable_sps_framerate=True)
 
         # Create the pre-motion buffer.
         buffersize = record_seconds_before_motion * camera_fps
