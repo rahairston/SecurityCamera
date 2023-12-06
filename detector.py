@@ -26,7 +26,8 @@ class Detector:
     def start(self):
         # Start recording to the detection buffer.
         self.camera.start_recording(
-            self.encoder
+            self.encoder,
+            output=FileOutput()
         )
         # Let the user know that the detector started successfully.
         print("Motion detector started successfully!")
