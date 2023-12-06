@@ -8,14 +8,13 @@ import os
 
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
-    def __init__(self, camera, h264_args, streaming_resolution='1120x840', fps=15, port=8000):
+    def __init__(self, camera, streaming_resolution='1120x840', fps=15, port=8000):
         self.camera = camera
-        self.h264_args = h264_args
         self.streaming_resolution = streaming_resolution
-        self.fps = fps
         self.server_port = port
         self.server_ip = self._socket_setup()
-
+        self.fps = fps
+        self.encoder = H264Encoder(framerate=fps)
         self.request_handlers = None
 
     # Set up the request handlers for tornado.
@@ -45,10 +44,10 @@ class Streamer:
         self._setup_request_handlers()
         try:
             # Create the stream and detection buffers.
-            stream_buffer = StreamBuffer(self.camera)
+            output = StreamingOutput()
 
             # Start sending frames to the streaming thread.
-            self.camera.start_recording(stream_buffer, **self.h264_args, resize=self.streaming_resolution)
+            self.camera.start_recording(stream_buffer, encoder=self.encoder, resize=self.streaming_resolution)
 
             # Create and loop the tornado application.
             application = tornado.web.Application(self.request_handlers)

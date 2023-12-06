@@ -124,10 +124,10 @@ if __name__ == '__main__':
                             ffmpeg_path=ffmpeg_path,
                             convert_h264_to_mp4=convert_h264_to_mp4)
 
-        # detector = Detector(camera=camera,
-        #                     recorder=recorder,
-        #                     motion_threshold=motion_threshold,
-        #                     detection_resolution=detection_resolution)
+        detector = Detector(camera=camera,
+                            recorder=recorder,
+                            motion_threshold=motion_threshold,
+                            detection_resolution=detection_resolution)
 
         detector.start()
         if not streamer_active:
@@ -144,6 +144,5 @@ if __name__ == '__main__':
         stream_resolution = tuple_from_resolution(stored_data["stream_resolution"])
         streamer = Streamer(camera=camera,
                             streaming_resolution=stream_resolution,
-                            camera_fps=camera_fps,
-                            fps=camera_fps, )
+                            fps=camera_fps)
         streamer.start()

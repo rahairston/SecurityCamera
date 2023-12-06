@@ -14,7 +14,7 @@ class Recorder:
     def __init__(self, camera, storage, camera_fps,
                  temporary_recordings_output_path="./temp_recordings/",
                  record_seconds_after_motion=12, max_recording_seconds=600,
-                 record_seconds_before_motion=5, ffmpeg_path="/usr/local/bin/ffmpeg", convert_h264_to_mp4=True):
+                 record_seconds_before_motion=5, ffmpeg_path="/usr/bin/ffmpeg", convert_h264_to_mp4=True):
         self.camera = camera
         self.storage = storage
         self.temporary_recordings_output_path = temporary_recordings_output_path
@@ -24,7 +24,7 @@ class Recorder:
         self.record_seconds_before_motion = record_seconds_before_motion
         self.ffmpeg_path = ffmpeg_path
         self.convert_h264_to_mp4 = convert_h264_to_mp4
-        self.encoder = H264Encoder(framerate=camera_fps)
+        self.encoder = H264Encoder(1000000, repeat=True, framerate=camera_fps)
 
         # Make sure CircularOutput contains at least 20 seconds of footage. Since this is the minimum for it work.
         if record_seconds_before_motion > 20:
@@ -33,9 +33,11 @@ class Recorder:
             delayed_storage_length_seconds = 20
         # Create the delayed frames stream.
         buffersize = delayed_storage_length_seconds * camera.controls.FrameRate[0]
-        filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp")
+        filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, "temp.h264")
         self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize), file=filename)
-        self.camera.start_recording(self.encoder, self.delayed_recording_stream)
+        self.encoder.output = [self.delayed_recording_stream]
+        self.camera.encoders = encoder
+        self.camera.start_encoder()
 
     # Method to call when there is motion.
     # This will start the recording if it hadn't already been started.
@@ -56,49 +58,31 @@ class Recorder:
             os.mkdir(os.path.join(get_exec_dir(), self.temporary_recordings_output_path))
         output_file_name = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, current_time_string)
         print('Started recording '+output_file_name)
+        self.delayed_recording_stream.start()
 
-        # record the frames "after" motion
-        self.camera.split_recording(output_file_name+'_after.h264', splitter_port=1, seconds=10)
-        # Write the 10 seconds "before" motion to disk as well
-        self.delayed_recording_stream.copy_to(output_file_name+'_before.h264', seconds=self.record_seconds_before_motion)
-        # Clear the delayed recording stream.
-        self.delayed_recording_stream.clear()
-
-        threading.Thread(target=self._start_countdown, args=(output_file_name,), daemon=True).start()
+        threading.Thread(target=self._start_countdown, args=(output_file_name), daemon=True).start()
 
     # Starts counting down from record_seconds_after_movement after movement is detected.
     # Stop recording if the timer gets to 0.
-    def _start_countdown(self, output_file_name):
+    def _start_countdown(self, output_file_name,):
         self.timer = self.record_seconds_after_motion
         recorded_time = 0
         while self.timer > 0 and not recorded_time > self.max_recording_seconds:
             time.sleep(1)
             recorded_time += 1
             self.timer -= 1
-        # split the recording back to the delayed frames stream.
-        self.camera.split_recording(self.delayed_recording_stream, splitter_port=1)
-        # Merge the two recordings.
-        file_path = self._merge_recordings(output_file_name)
+
+        # Stop the delayed stream
+        self.delayed_recording_stream.stop()
+        filename = os.path.join(get_exec_dir(), self.temporary_recordings_output_path)
+        temp_name = os.path.join(filename, "temp.h264")
+        os.rename(filename + "/temp.h264", output_file_name)
+
         # Put the h264 recording into an mp4 container.
         if self.convert_h264_to_mp4:
-            file_path = self._put_in_mp4_container(file_path)
+            output_file_name = self._put_in_mp4_container(output_file_name)
         # Store the recording in the right place.
-        self.storage.store(file_path)
-
-    # Merge the two h264 recordings and delete the old h264 files.
-    def _merge_recordings(self, output_file_name):
-        with open(output_file_name+"_before.h264", 'rb') as before:
-            with open(output_file_name+"_after.h264", 'rb') as after:
-                with open(output_file_name+".h264", 'ab') as new:
-                    new.write(before.read())
-                    new.write(after.read())
-        # Remove the separate files.
-        try:
-            os.remove(output_file_name+"_before.h264")
-            os.remove(output_file_name+"_after.h264")
-        except Exception as e:
-            print(e)
-        return output_file_name+".h264"
+        self.storage.store(output_file_name)
 
     # Put the h264 recording into an mp4 container.
     def _put_in_mp4_container(self, file_path):
