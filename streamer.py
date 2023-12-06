@@ -5,6 +5,7 @@ from picamera2.encoders import H264Encoder
 from string import Template
 import socket
 import os
+import io
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
