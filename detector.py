@@ -1,4 +1,5 @@
 from buffers import DetectionBuffer
+from picamera2.encoders import MJPEGEncoder
 import cv2
 
 
