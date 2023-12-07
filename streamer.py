@@ -26,7 +26,6 @@ class Streamer:
         self.server_port = port
         self.server_ip = self._socket_setup()
         self.fps = fps
-        self.encoder = H264Encoder(framerate=fps)
         self.request_handlers = None
 
     # Set up the request handlers for tornado.
@@ -35,6 +34,9 @@ class Streamer:
 
         # Handler for the javascript of the streaming page.
         class JSHandler(tornado.web.RequestHandler):
+            def check_origin(self, origin):
+                return True
+
             def get(self):
                 self.write(Template(get_file_content('web/index.js')).substitute({'ip': parent.server_ip, 'port': parent.server_port, 'fps': parent.fps}))
 
