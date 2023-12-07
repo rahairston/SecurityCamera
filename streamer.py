@@ -1,21 +1,12 @@
 import tornado.web, tornado.ioloop, tornado.websocket
 from general import WebSocketHandler, get_exec_dir, get_file_content
 from picamera2.encoders import H264Encoder
+from picamera2.outputs import FileOutput
 from string import Template
 from threading import Condition
 import socket
 import os
 import io
-
-class StreamingOutput(io.BufferedIOBase):
-    def __init__(self):
-        self.frame = None
-        self.condition = Condition()
-
-    def write(self, buf):
-        with self.condition:
-            self.frame = buf
-            self.condition.notify_all()
 
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
@@ -56,10 +47,11 @@ class Streamer:
         try:
             # Create the stream and detection buffers.
             output = StreamingOutput()
-            output.start()
+            fil = FileOutput(output)
+            fil.start()
 
             # Start sending frames to the streaming thread.
-            self.camera.encoders = [list(self.camera.encoders)[0], output]
+            self.camera.encoders = [list(self.camera.encoders)[0], fil]
 
             # Create and loop the tornado application.
             application = tornado.web.Application(self.request_handlers)
