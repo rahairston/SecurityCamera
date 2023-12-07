@@ -99,7 +99,7 @@ if __name__ == '__main__':
         record_seconds_before_motion=record_seconds_before_motion, 
         streamer_active=streamer_active)
 
-    camera.encoders = encoder
+    camera.encoders = encoder.encoder
     camera.start()
     camera.start_encoder()
 
