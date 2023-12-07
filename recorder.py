@@ -1,6 +1,4 @@
 from picamera2 import Picamera2
-from picamera2.outputs import CircularOutput
-from picamera2.encoders import H264Encoder
 from general import get_exec_dir
 import subprocess
 import threading
@@ -8,7 +6,6 @@ import datetime
 import time
 import os
 import numpy as np
-
 
 # Class that handles the recording.
 class Recorder:

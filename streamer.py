@@ -1,12 +1,9 @@
 import tornado.web, tornado.ioloop, tornado.websocket
 from general import WebSocketHandler, get_exec_dir, get_file_content
-from picamera2.encoders import H264Encoder
-from picamera2.outputs import FileOutput
 from string import Template
 from threading import Condition
 import socket
 import os
-import io
 
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:

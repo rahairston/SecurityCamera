@@ -1,5 +1,6 @@
 from picamera2.outputs import CircularOutput, FileOutput
 from picamera2.encoders import H264Encoder
+import io
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
