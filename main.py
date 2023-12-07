@@ -133,8 +133,6 @@ if __name__ == '__main__':
                             convert_h264_to_mp4=convert_h264_to_mp4,
                             recorder_output=encoder.recorder_output)
 
-        recorder.start()
-
         threading.Thread(target=recorder.detect_motion).start()
         if not streamer_active:
             while True:
