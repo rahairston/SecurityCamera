@@ -16,7 +16,7 @@ class StreamingOutput(io.BufferedIOBase):
         with self.condition:
             self.frame = buf
             self.condition.notify_all()
-            if self.camera.frame.complete and self.camera.frame.frame_type != 2:
+            if self.camera.frames.complete and self.camera.frames.frame_type != 2:
                 self.buffer.write(buf)
                 frame = self.buffer.getvalue()
                 if self.loop is not None and WebSocketHandler.hasConnections():
