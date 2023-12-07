@@ -1,7 +1,6 @@
 import tornado.web, tornado.ioloop, tornado.websocket
 from general import WebSocketHandler, get_exec_dir, get_file_content
 from string import Template
-from threading import Condition
 import socket
 import os
 
