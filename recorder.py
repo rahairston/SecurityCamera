@@ -9,7 +9,7 @@ import numpy as np
 
 # Class that handles the recording.
 class Recorder:
-    def __init__(self, camera, storage, recorder_output,camera_fps,
+    def __init__(self, camera, storage, recorder_output,
                  temporary_recordings_output_path="./temp_recordings/",
                  record_seconds_after_motion=12, max_recording_seconds=600, 
                  ffmpeg_path="/usr/bin/ffmpeg", convert_h264_to_mp4=True):
