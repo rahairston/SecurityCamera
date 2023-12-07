@@ -61,7 +61,9 @@ class Streamer:
             fil.start()
 
             # Start sending frames to the streaming thread.
-            self.camera.encoders = [list(self.camera.encoders)[0], fil]
+            encoder = list(self.camera.encoders)[0]
+            encoder.output = [encoder.output, fil]
+            self.camera.encoders = encoder
 
             # Create and loop the tornado application.
             application = tornado.web.Application(self.request_handlers)
