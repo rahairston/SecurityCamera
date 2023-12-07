@@ -8,6 +8,16 @@ import socket
 import os
 import io
 
+class StreamingOutput(io.BufferedIOBase):
+    def __init__(self):
+        self.frame = None
+        self.condition = Condition()
+
+    def write(self, buf):
+        with self.condition:
+            self.frame = buf
+            self.condition.notify_all()
+
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
     def __init__(self, camera, streaming_resolution='1120x840', fps=15, port=8000):
