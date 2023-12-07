@@ -5,11 +5,12 @@ from threading import Condition
 import io
 
 class StreamingOutput(io.BufferedIOBase):
-    def __init__(self):
+    def __init__(self, camera):
         self.frame = None
         self.condition = Condition()
         self.loop = None
         self.buffer = io.BytesIO()
+        self.camera = camera
 
     def write(self, buf):
         with self.condition:
@@ -30,7 +31,7 @@ class StreamingOutput(io.BufferedIOBase):
         self.loop = loop
 
 class Encoder:
-    def __init__(self, camera_fps, recorder_active, record_seconds_before_motion, streamer_active):
+    def __init__(self, camera, camera_fps, recorder_active, record_seconds_before_motion, streamer_active):
 
         self.encoder = H264Encoder(1000000, repeat=True, iperiod=camera_fps, framerate=camera_fps, enable_sps_framerate=True)
         outputs = []
@@ -40,7 +41,7 @@ class Encoder:
             outputs.append(self.recorder_output)
         
         if streamer_active:
-            self.streamer_output = FileOutput(StreamingOutput())
+            self.streamer_output = FileOutput(StreamingOutput(camera))
             outputs.append(self.streamer_output)
 
         self.encoder.output = outputs

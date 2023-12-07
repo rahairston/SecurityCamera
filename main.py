@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
     record_seconds_before_motion = stored_data["record_seconds_before_motion"]
 
-    encoder = Encoder(camera_fps=camera_fps, 
+    encoder = Encoder(camera=camera,camera_fps=camera_fps, 
         recorder_active=recorder_active, 
         record_seconds_before_motion=record_seconds_before_motion, 
         streamer_active=streamer_active)
