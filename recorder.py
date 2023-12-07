@@ -14,26 +14,19 @@ import numpy as np
 class Recorder:
     def __init__(self, camera, storage, camera_fps,
                  temporary_recordings_output_path="./temp_recordings/",
-                 record_seconds_after_motion=12, max_recording_seconds=600,
-                 record_seconds_before_motion=5, ffmpeg_path="/usr/bin/ffmpeg", convert_h264_to_mp4=True):
+                 record_seconds_after_motion=12, max_recording_seconds=600, ffmpeg_path="/usr/bin/ffmpeg", convert_h264_to_mp4=True,
+                 recorder_output):
         self.camera = camera
         self.storage = storage
         self.temporary_recordings_output_path = temporary_recordings_output_path
         self.record_seconds_after_motion = record_seconds_after_motion
         self.max_recording_seconds = max_recording_seconds
         self.timer = 0
-        self.record_seconds_before_motion = record_seconds_before_motion
         self.ffmpeg_path = ffmpeg_path
         self.convert_h264_to_mp4 = convert_h264_to_mp4
-        self.encoder = H264Encoder(1000000, repeat=True, iperiod=camera_fps, framerate=camera_fps, enable_sps_framerate=True)
 
         # Create the pre-motion buffer.
-        buffersize = record_seconds_before_motion * camera_fps
-        self.delayed_recording_stream = CircularOutput(buffersize=int(buffersize))
-        self.encoder.output = [self.delayed_recording_stream]
-        self.camera.encoders = self.encoder
-        self.camera.start()
-        self.camera.start_encoder()
+        self.delayed_recording_stream = recorder_output
 
     def detect_motion(self):
         print("Motion Detection Started...")

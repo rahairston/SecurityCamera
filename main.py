@@ -3,6 +3,7 @@ from picamera2 import Picamera2
 from libcamera import controls, Transform
 from streamer import Streamer
 from recorder import Recorder
+from encoder import Encoder
 from storage import Storage
 from ast import literal_eval
 import threading
@@ -91,10 +92,20 @@ if __name__ == '__main__':
 
         threading.Thread(target=annotate_time).start()
 
+    record_seconds_before_motion = stored_data["record_seconds_before_motion"]
+
+    encoder = Encoder(camera_fps=camera_fps, 
+        recorder_active=recorder_active, 
+        record_seconds_before_motion=record_seconds_before_motion, 
+        streamer_active=streamer_active)
+
+    camera.encoders = encoder
+    camera.start()
+    camera.start_encoder()
+
     # Start the recorder.
     if recorder_active:
         motion_threshold = stored_data["detector_motion_threshold"]
-        record_seconds_before_motion = stored_data["record_seconds_before_motion"]
         recordings_output_path = stored_data['local_recordings_output_path']
         temporary_recordings_output_path = stored_data['temporary_local_recordings_output_path']
         ffmpeg_path = stored_data['ffmpeg_path']
@@ -115,13 +126,15 @@ if __name__ == '__main__':
 
         recorder = Recorder(camera=camera,
                             storage=storage,
-                            camera_fps=camera_fps,
                             temporary_recordings_output_path=temporary_recordings_output_path,
                             record_seconds_after_motion=record_seconds_after_motion,
                             max_recording_seconds=max_recording_seconds,
                             record_seconds_before_motion=record_seconds_before_motion,
                             ffmpeg_path=ffmpeg_path,
-                            convert_h264_to_mp4=convert_h264_to_mp4)
+                            convert_h264_to_mp4=convert_h264_to_mp4,
+                            recorder_output=encoder.recorder_output)
+
+        recorder.start()
 
         threading.Thread(target=recorder.detect_motion).start()
         if not streamer_active:
@@ -138,5 +151,6 @@ if __name__ == '__main__':
         stream_resolution = tuple_from_resolution(stored_data["stream_resolution"])
         streamer = Streamer(camera=camera,
                             streaming_resolution=stream_resolution,
-                            fps=camera_fps)
+                            fps=camera_fps,
+                            streamer_output=encoder.streamer_output)
         streamer.start()

@@ -8,25 +8,15 @@ import socket
 import os
 import io
 
-class StreamingOutput(io.BufferedIOBase):
-    def __init__(self):
-        self.frame = None
-        self.condition = Condition()
-
-    def write(self, buf):
-        with self.condition:
-            self.frame = buf
-            self.condition.notify_all()
-
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
-    def __init__(self, camera, streaming_resolution='1120x840', fps=15, port=8000):
+    def __init__(self, camera, streaming_resolution='1120x840', port=8000, streamer_output):
         self.camera = camera
         self.streaming_resolution = streaming_resolution
         self.server_port = port
         self.server_ip = self._socket_setup()
-        self.fps = fps
         self.request_handlers = None
+        self.streamer_output=streamer_output
 
     # Set up the request handlers for tornado.
     def _setup_request_handlers(self):
@@ -58,14 +48,7 @@ class Streamer:
         self._setup_request_handlers()
         try:
             # Create the stream and detection buffers.
-            output = StreamingOutput()
-            fil = FileOutput(output)
-            fil.start()
-
-            # Start sending frames to the streaming thread.
-            encoder = list(self.camera.encoders)[0]
-            encoder.output = [encoder.output, fil]
-            self.camera.encoders = encoder
+            self.streamer_output.start()
 
             # Create and loop the tornado application.
             application = tornado.web.Application(self.request_handlers)
