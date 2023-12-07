@@ -10,13 +10,13 @@ import io
 
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
-    def __init__(self, camera, streaming_resolution='1120x840', port=8000, streamer_output):
+    def __init__(self, camera, streamer_output, streaming_resolution='1120x840', port=8000):
         self.camera = camera
+        self.streamer_output=streamer_output
         self.streaming_resolution = streaming_resolution
         self.server_port = port
         self.server_ip = self._socket_setup()
         self.request_handlers = None
-        self.streamer_output=streamer_output
 
     # Set up the request handlers for tornado.
     def _setup_request_handlers(self):
