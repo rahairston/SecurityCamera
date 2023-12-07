@@ -69,7 +69,6 @@ class Streamer:
             application = tornado.web.Application(self.request_handlers)
             application.listen(self.server_port)
             loop = tornado.ioloop.IOLoop.current()
-            stream_buffer.setLoop(loop)
             print("Streamer started on http://{}:{}".format(self.server_ip, self.server_port))
             loop.start()
 
