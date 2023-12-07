@@ -6,9 +6,10 @@ import os
 
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
-    def __init__(self, camera, streamer_output, streaming_resolution='1120x840', port=8000):
+    def __init__(self, camera, streamer_output, fps=15, streaming_resolution='1120x840', port=8000):
         self.camera = camera
         self.streamer_output=streamer_output
+        self.fps = fps
         self.streaming_resolution = streaming_resolution
         self.server_port = port
         self.server_ip = self._socket_setup()
