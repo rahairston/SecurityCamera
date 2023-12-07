@@ -129,7 +129,6 @@ if __name__ == '__main__':
                             temporary_recordings_output_path=temporary_recordings_output_path,
                             record_seconds_after_motion=record_seconds_after_motion,
                             max_recording_seconds=max_recording_seconds,
-                            record_seconds_before_motion=record_seconds_before_motion,
                             ffmpeg_path=ffmpeg_path,
                             convert_h264_to_mp4=convert_h264_to_mp4,
                             recorder_output=encoder.recorder_output)
