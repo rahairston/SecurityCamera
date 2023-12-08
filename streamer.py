@@ -84,7 +84,7 @@ class Streamer:
             self.streamer_output.start()
             address = ('', self.port)
             server = StreamingServer(address, StreamingHandler)
-            server.output = self.streamer_output.output
+            server.output = self.streamer_output.fileoutput 
             server.serve_forever()
         except KeyboardInterrupt:
             self.camera.close()
