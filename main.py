@@ -38,11 +38,9 @@ def night_mode(cam):
 
     :param cam: the PiCamera to tweak
     """
-    cam.framerate = Fraction(1, 6)
     cam.shutter_speed = 3000000
     cam.exposure_mode = 'off'
     cam.ISO = 800
-    cam.exposure_compensation = 25
     cam.awb_mode = 'off'
     cam.awb_gains = (2.0, 2.0)
     sleep(10)
