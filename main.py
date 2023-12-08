@@ -15,6 +15,7 @@ import sys
 import os
 import cv2
 import numpy as np
+from time import sleep
 
 # Maximum amount of attempts to connect to the internet.
 # Exit if this is exceeded.
