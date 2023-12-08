@@ -21,7 +21,7 @@ PAGE = """\
 <body>
 <h1>Picamera2 MJPEG Streaming Demo</h1>
     <video width="640" height="480" controls>
-        <source src="http://{}:{}/stream.mp4" type="application/x-mpegURL" />
+        <source src="http://{}:{}/stream.mpd" type="video/x-mpegURL" />
     </video> 
 </body>
 </html>
@@ -89,7 +89,7 @@ class Streamer:
             # Create the stream and detection buffers.
             self.streamer_output.start()
             address = ('', self.port)
-            server = StreamingServer(address, StreamingHandler)
+            server = StreamingServer(address, server.BaseHTTPRequestHandler)
             server.output = self.streamer_output 
             server.web_page = PAGE.format(self.get_ip(), self.port)
             server.serve_forever()
