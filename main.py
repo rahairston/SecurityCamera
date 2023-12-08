@@ -32,6 +32,38 @@ def wait_for_internet():
 def tuple_from_resolution(res):
     return tuple(map(int, res.split("x")))
 
+def night_mode(cam):
+    """
+    Switches the camera to night mode.
+
+    :param cam: the PiCamera to tweak
+    """
+    logging.info("Switching to night-time mode")
+    cam.framerate = Fraction(1, 6)
+    cam.shutter_speed = 3000000
+    cam.exposure_mode = 'off'
+    cam.ISO = 800
+    cam.exposure_compensation = 25
+    cam.awb_mode = 'off'
+    cam.awb_gains = (2.0, 2.0)
+    logging.info("Waiting for auto white balance")
+    sleep(10)
+
+def day_mode(cam):
+    """
+    Switches the camera to day mode.
+
+    :@param cam: the PiCamera to tweak
+    """
+    logging.info("Switching to day-time mode")
+    cam.shutter_speed = 0
+    cam.exposure_mode = 'auto'
+    cam.ISO = 200
+    cam.exposure_compensation = 25
+    cam.awb_mode = 'auto'
+    logging.info("Waiting for auto white balance")
+    sleep(10)
+
 # Run if this script is run on its own.
 if __name__ == '__main__':
     # Get the path of the configuration file.
@@ -71,6 +103,7 @@ if __name__ == '__main__':
         transform=Transform(hflip=camera_HFlip, vflip=camera_vFlip)
     )
     camera.configure(video_config)
+    night_mode(camera)
 
     # Annotate the current date and time in the recording.
     if annotate_time:
