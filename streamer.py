@@ -87,9 +87,9 @@ class Streamer:
             # Create the stream and detection buffers.
             self.streamer_output.start()
             address = ('', self.port)
-            server = StreamingServer(address, StreamingHandler)
-            server.output = self.streamer_output 
-            server.web_page = PAGE.format(self.get_ip(), self.port)
-            server.serve_forever()
+            sv = StreamingServer(address, server.BaseHTTPRequestHandler)
+            sv.output = self.streamer_output 
+            sv.web_page = PAGE.format(self.get_ip(), self.port)
+            sv.serve_forever()
         except KeyboardInterrupt:
             self.camera.close()
