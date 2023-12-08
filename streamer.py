@@ -7,6 +7,7 @@
 import io
 import logging
 import socketserver
+import socket
 from http import server
 from threading import Condition
 from picamera2.encoders import JpegEncoder
