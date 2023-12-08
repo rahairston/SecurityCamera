@@ -14,18 +14,16 @@ class StreamingOutput(io.BufferedIOBase):
 
     def write(self, buf):
         with self.condition:
-            self.frame = buf
-            self.condition.notify_all()
-            if self.camera.frames.complete and self.camera.frames.frame_type != 2:
-                self.buffer.write(buf)
-                frame = self.buffer.getvalue()
-                if self.loop is not None and WebSocketHandler.hasConnections():
-                    self.loop.add_callback(callback=WebSocketHandler.broadcast, message=frame)
+            # self.frame = buf
+            # self.condition.notify_all()
+            # if self.camera.frames.complete and self.camera.frames.frame_type != 2:
+            self.buffer.write(buf)
+            frame = self.buffer.getvalue()
+            if self.loop is not None and WebSocketHandler.hasConnections():
+                self.loop.add_callback(callback=WebSocketHandler.broadcast, message=frame)
 
-                self.buffer.seek(0)
-                self.buffer.truncate()
-            else:
-                self.buffer.write(buf)
+            self.buffer.seek(0)
+            self.buffer.truncate()
 
     def setLoop(self, loop):
         self.loop = loop
