@@ -7,7 +7,6 @@
 import io
 import logging
 import socketserver
-import socket
 from http import server
 from threading import Condition
 from picamera2.encoders import JpegEncoder
@@ -20,9 +19,7 @@ PAGE = """\
 </head>
 <body>
 <h1>Picamera2 MJPEG Streaming Demo</h1>
-    <video width="640" height="480" controls>
-        <source src="http://{}:{}/stream.mpd" type="video/x-mpegURL" />
-    </video> 
+<source src="http://{}:{}/stream.m3u8" type="application/x-mpegURL" />
 </body>
 </html>
 """
@@ -40,31 +37,31 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)
-        # elif self.path == '/stream.m3u8':
-        #     self.send_response(200)
-        #     self.send_header('Age', 0)
-        #     self.send_header('Cache-Control', 'no-cache, private')
-        #     self.send_header('Pragma', 'no-cache')
-        #     self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
-        #     self.end_headers()
-        #     try:
-        #         while True:
-        #             with self.server.output.condition:
-        #                 self.server.output.condition.wait()
-        #                 frame = self.server.output.frame
-        #             self.wfile.write(b'--FRAME\r\n')
-        #             self.send_header('Content-Type', 'image/jpeg')
-        #             self.send_header('Content-Length', len(frame))
-        #             self.end_headers()
-        #             self.wfile.write(frame)
-        #             self.wfile.write(b'\r\n')
-        #     except Exception as e:
-        #         logging.warning(
-        #             'Removed streaming client %s: %s',
-        #             self.client_address, str(e))
-        # else:
-        #     self.send_error(404)
-        #     self.end_headers()
+        elif self.path == '/stream.mjpg':
+            self.send_response(200)
+            self.send_header('Age', 0)
+            self.send_header('Cache-Control', 'no-cache, private')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
+            self.end_headers()
+            try:
+                while True:
+                    with self.server.output.condition:
+                        self.server.output.condition.wait()
+                        frame = self.server.output.frame
+                    self.wfile.write(b'--FRAME\r\n')
+                    self.send_header('Content-Type', 'image/jpeg')
+                    self.send_header('Content-Length', len(frame))
+                    self.end_headers()
+                    self.wfile.write(frame)
+                    self.wfile.write(b'\r\n')
+            except Exception as e:
+                logging.warning(
+                    'Removed streaming client %s: %s',
+                    self.client_address, str(e))
+        else:
+            self.send_error(404)
+            self.end_headers()
 
 
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
@@ -89,9 +86,9 @@ class Streamer:
             # Create the stream and detection buffers.
             self.streamer_output.start()
             address = ('', self.port)
-            sv = StreamingServer(address, server.BaseHTTPRequestHandler)
-            sv.output = self.streamer_output 
-            sv.web_page = PAGE.format(self.get_ip(), self.port)
-            sv.serve_forever()
+            server = StreamingServer(address, StreamingHandler)
+            server.output = self.streamer_output 
+            server.web_page = PAGE.format(self.get_ip(), self.port)
+            server.serve_forever()
         except KeyboardInterrupt:
             self.camera.close()
