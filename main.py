@@ -38,7 +38,6 @@ def night_mode(cam):
 
     :param cam: the PiCamera to tweak
     """
-    logging.info("Switching to night-time mode")
     cam.framerate = Fraction(1, 6)
     cam.shutter_speed = 3000000
     cam.exposure_mode = 'off'
@@ -54,7 +53,6 @@ def day_mode(cam):
 
     :@param cam: the PiCamera to tweak
     """
-    logging.info("Switching to day-time mode")
     cam.shutter_speed = 0
     cam.exposure_mode = 'auto'
     cam.ISO = 200
