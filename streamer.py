@@ -20,7 +20,9 @@ PAGE = """\
 </head>
 <body>
 <h1>Picamera2 MJPEG Streaming Demo</h1>
-<source src="http://{}:{}/stream.m3u8" type="application/x-mpegURL" />
+    <video width="640" height="480" controls>
+        <source src="http://{}:{}/stream.m3u8" type="application/x-mpegURL" />
+    </video> 
 </body>
 </html>
 """
@@ -38,7 +40,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)
-        # elif self.path == '/stream.mjpg':
+        # elif self.path == '/stream.m3u8':
         #     self.send_response(200)
         #     self.send_header('Age', 0)
         #     self.send_header('Cache-Control', 'no-cache, private')
