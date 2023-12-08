@@ -46,7 +46,6 @@ def night_mode(cam):
     cam.exposure_compensation = 25
     cam.awb_mode = 'off'
     cam.awb_gains = (2.0, 2.0)
-    logging.info("Waiting for auto white balance")
     sleep(10)
 
 def day_mode(cam):
@@ -61,7 +60,6 @@ def day_mode(cam):
     cam.ISO = 200
     cam.exposure_compensation = 25
     cam.awb_mode = 'auto'
-    logging.info("Waiting for auto white balance")
     sleep(10)
 
 # Run if this script is run on its own.
