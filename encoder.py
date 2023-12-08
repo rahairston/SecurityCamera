@@ -1,5 +1,5 @@
 from picamera2.outputs import CircularOutput, FfmpegOutput
-from picamera2.encoders import H264Encoder
+from picamera2.encoders import H264Encoder, MJPEGEncoder
 from general import WebSocketHandler, get_exec_dir, get_file_content
 from threading import Condition
 import io
@@ -17,7 +17,7 @@ class StreamingOutput(io.BufferedIOBase):
 class Encoder:
     def __init__(self, camera, camera_fps, recorder_active, record_seconds_before_motion, streamer_active):
 
-        self.encoder = H264Encoder(1000000, repeat=True, iperiod=camera_fps, framerate=camera_fps, enable_sps_framerate=True)
+        self.encoder = MJPEGEncoder() #H264Encoder(1000000, repeat=True, iperiod=camera_fps, framerate=camera_fps, enable_sps_framerate=True)
         outputs = []
         if recorder_active:
             buffersize = record_seconds_before_motion * camera_fps

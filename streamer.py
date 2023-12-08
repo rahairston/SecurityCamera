@@ -38,28 +38,28 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Length', len(content))
             self.end_headers()
             self.wfile.write(content)
-        # elif self.path == '/stream.mjpg':
-        #     self.send_response(200)
-        #     self.send_header('Age', 0)
-        #     self.send_header('Cache-Control', 'no-cache, private')
-        #     self.send_header('Pragma', 'no-cache')
-        #     self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
-        #     self.end_headers()
-        #     try:
-        #         while True:
-        #             with self.server.output.condition:
-        #                 self.server.output.condition.wait()
-        #                 frame = self.server.output.frame
-        #             self.wfile.write(b'--FRAME\r\n')
-        #             self.send_header('Content-Type', 'image/jpeg')
-        #             self.send_header('Content-Length', len(frame))
-        #             self.end_headers()
-        #             self.wfile.write(frame)
-        #             self.wfile.write(b'\r\n')
-        #     except Exception as e:
-        #         logging.warning(
-        #             'Removed streaming client %s: %s',
-        #             self.client_address, str(e))
+        elif self.path == '/stream.mjpg':
+            self.send_response(200)
+            self.send_header('Age', 0)
+            self.send_header('Cache-Control', 'no-cache, private')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
+            self.end_headers()
+            try:
+                while True:
+                    with self.server.output.condition:
+                        self.server.output.condition.wait()
+                        frame = self.server.output.frame
+                    self.wfile.write(b'--FRAME\r\n')
+                    self.send_header('Content-Type', 'image/jpeg')
+                    self.send_header('Content-Length', len(frame))
+                    self.end_headers()
+                    self.wfile.write(frame)
+                    self.wfile.write(b'\r\n')
+            except Exception as e:
+                logging.warning(
+                    'Removed streaming client %s: %s',
+                    self.client_address, str(e))
         else:
             self.send_error(404)
             self.end_headers()
@@ -87,8 +87,8 @@ class Streamer:
             # Create the stream and detection buffers.
             self.streamer_output.start()
             address = ('', self.port)
-            sv = StreamingServer(address, server.BaseHTTPRequestHandler)
-            sv.output = self.streamer_output 
+            sv = StreamingServer(address, StreamingHandler)
+            sv.output = self.streamer_output.output
             sv.web_page = PAGE.format(self.get_ip(), self.port)
             sv.serve_forever()
         except KeyboardInterrupt:
