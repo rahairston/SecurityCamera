@@ -19,7 +19,7 @@ PAGE = """\
 </head>
 <body>
 <h1>Picamera2 MJPEG Streaming Demo</h1>
-<img src="stream.mjpg" width="640" height="480" />
+<source src="http://{}:{}/stream.m3u8" type="application/x-mpegURL" />
 </body>
 </html>
 """
@@ -83,6 +83,7 @@ class Streamer:
             # Create the stream and detection buffers.
             self.streamer_output.start()
             address = ('', self.port)
+            print("Serving at ", address)
             server = StreamingServer(address, StreamingHandler)
             server.output = self.streamer_output.fileoutput 
             server.serve_forever()
