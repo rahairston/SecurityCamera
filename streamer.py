@@ -88,7 +88,7 @@ class Streamer:
             self.streamer_output.start()
             address = ('', self.port)
             sv = StreamingServer(address, StreamingHandler)
-            sv.output = self.streamer_output.output
+            sv.output = self.streamer_output.fileoutput
             sv.web_page = PAGE.format(self.get_ip(), self.port)
             sv.serve_forever()
         except KeyboardInterrupt:
