@@ -62,9 +62,9 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         #         logging.warning(
         #             'Removed streaming client %s: %s',
         #             self.client_address, str(e))
-        else:
-            self.send_error(404)
-            self.end_headers()
+        # else:
+        #     self.send_error(404)
+        #     self.end_headers()
 
 
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
