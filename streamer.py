@@ -75,7 +75,10 @@ class Streamer:
         self.streamer_output=streamer_output
         self.port = port
 
-    # Set up the request handlers for tornado.
+    def get_ip(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 0))
+        return s.getsockname()[0]
    
     # Start streaming.
     def start(self):
@@ -83,7 +86,7 @@ class Streamer:
             # Create the stream and detection buffers.
             self.streamer_output.start()
             address = ('', self.port)
-            print("Serving at ", address)
+            PAGE = PAGE.format(self.get_ip(), self.port)
             server = StreamingServer(address, StreamingHandler)
             server.output = self.streamer_output.fileoutput 
             server.serve_forever()
