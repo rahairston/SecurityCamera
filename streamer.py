@@ -20,7 +20,7 @@ PAGE = """\
 </head>
 <body>
 <h1>Picamera2 MJPEG Streaming Demo</h1>
-<source src="http://{}:{}/stream.m3u8" type="application/x-mpegURL" />
+<img src="stream.mjpg" width="640" height="480" />
 </body>
 </html>
 """
