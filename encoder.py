@@ -1,4 +1,4 @@
-from picamera2.outputs import CircularOutput, FileOutput
+from picamera2.outputs import CircularOutput, FfmpegOutput
 from picamera2.encoders import H264Encoder
 from general import WebSocketHandler, get_exec_dir, get_file_content
 from threading import Condition
@@ -39,7 +39,7 @@ class Encoder:
             outputs.append(self.recorder_output)
         
         if streamer_active:
-            self.streamer_output = FileOutput(StreamingOutput(camera))
+            self.streamer_output = FfmpegOutput("-f hls -hls_time 4 -hls_list_size 5 -hls_flags delete_segments -hls_allow_cache 0 stream.m3u8")
             outputs.append(self.streamer_output)
 
         self.encoder.output = outputs
