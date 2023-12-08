@@ -26,7 +26,7 @@ PAGE = """\
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
     def __init__(self, output):
-        super(self).__init__()
+        super().__init__()
         self.output = output
 
     def do_GET(self):
