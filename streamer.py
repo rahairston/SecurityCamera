@@ -52,7 +52,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 while True:
                     with self.output.condition:
                         self.output.condition.wait()
-                        frame = output.frame
+                        frame = self.output.frame
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
                     self.send_header('Content-Length', len(frame))
