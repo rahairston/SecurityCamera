@@ -25,10 +25,6 @@ PAGE = """\
 """
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
-    def __init__(self, output, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.output = output
-
     def do_GET(self):
         if self.path == '/':
             self.send_response(301)
@@ -50,9 +46,9 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.end_headers()
             try:
                 while True:
-                    with self.output.condition:
-                        self.output.condition.wait()
-                        frame = self.output.frame
+                    with self.server.output.condition:
+                        self.server.output.condition.wait()
+                        frame = self.server.output.frame
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
                     self.send_header('Content-Length', len(frame))
@@ -87,7 +83,8 @@ class Streamer:
             # Create the stream and detection buffers.
             self.streamer_output.start()
             address = ('', self.port)
-            server = StreamingServer(address, StreamingHandler(output=self.streamer_output))
+            server = StreamingServer(address, StreamingHandler)
+            server.output = self.streamer_output
             server.serve_forever()
         except KeyboardInterrupt:
             self.camera.close()
