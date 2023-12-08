@@ -25,7 +25,7 @@ class Encoder:
             outputs.append(self.recorder_output)
         
         if streamer_active:
-            self.streamer_output = FfmpegOutput("-f hls -hls_time 4 -hls_list_size 5 -hls_flags delete_segments -hls_allow_cache 0 stream.m3u8")
+            self.streamer_output = FfmpegOutput("-f dash -window_size 5 -use_template 1 -use_timeline 1 stream.mpd")
             outputs.append(self.streamer_output)
 
         self.encoder.output = outputs

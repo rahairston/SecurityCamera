@@ -21,7 +21,7 @@ PAGE = """\
 <body>
 <h1>Picamera2 MJPEG Streaming Demo</h1>
     <video width="640" height="480" controls>
-        <source src="http://{}:{}/stream.m3u8" type="application/x-mpegURL" />
+        <source src="http://{}:{}/stream.mp4" type="application/x-mpegURL" />
     </video> 
 </body>
 </html>
