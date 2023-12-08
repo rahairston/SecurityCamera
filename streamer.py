@@ -31,7 +31,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Location', '/index.html')
             self.end_headers()
         elif self.path == '/index.html':
-            content = PAGE.encode('utf-8')
+            content = self.server.web_page.encode('utf-8')
             self.send_response(200)
             self.send_header('Content-Type', 'text/html')
             self.send_header('Content-Length', len(content))
@@ -86,9 +86,9 @@ class Streamer:
             # Create the stream and detection buffers.
             self.streamer_output.start()
             address = ('', self.port)
-            PAGE = PAGE.format(self.get_ip(), self.port)
             server = StreamingServer(address, StreamingHandler)
             server.output = self.streamer_output.fileoutput 
+            server.web_page = PAGE.format(self.get_ip(), self.port)
             server.serve_forever()
         except KeyboardInterrupt:
             self.camera.close()
