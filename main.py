@@ -147,7 +147,5 @@ if __name__ == '__main__':
         wait_for_internet()
         stream_resolution = tuple_from_resolution(stored_data["stream_resolution"])
         streamer = Streamer(camera=camera,
-                            streaming_resolution=stream_resolution,
-                            streamer_output=encoder.streamer_output,
-                            fps=camera_fps)
+                            streamer_output=encoder.streamer_output)
         streamer.start()

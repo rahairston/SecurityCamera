@@ -1,59 +1,89 @@
-import tornado.web, tornado.ioloop, tornado.websocket
-from general import WebSocketHandler, get_exec_dir, get_file_content
-from string import Template
-import socket
-import os
+#!/usr/bin/python3
+
+# Mostly copied from https://picamera.readthedocs.io/en/release-1.13/recipes2.html
+# Run this script, then point a web browser at http:<this-ip-address>:8000
+# Note: needs simplejpeg to be installed (pip3 install simplejpeg).
+
+import io
+import logging
+import socketserver
+from http import server
+from threading import Condition
+from picamera2.encoders import JpegEncoder
+from picamera2.outputs import FileOutput
+
+PAGE = """\
+<html>
+<head>
+<title>picamera2 MJPEG streaming demo</title>
+</head>
+<body>
+<h1>Picamera2 MJPEG Streaming Demo</h1>
+<img src="stream.mjpg" width="640" height="480" />
+</body>
+</html>
+"""
+
+class StreamingHandler(server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            self.send_response(301)
+            self.send_header('Location', '/index.html')
+            self.end_headers()
+        elif self.path == '/index.html':
+            content = PAGE.encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.send_header('Content-Length', len(content))
+            self.end_headers()
+            self.wfile.write(content)
+        elif self.path == '/stream.mjpg':
+            self.send_response(200)
+            self.send_header('Age', 0)
+            self.send_header('Cache-Control', 'no-cache, private')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
+            self.end_headers()
+            try:
+                while True:
+                    with output.condition:
+                        output.condition.wait()
+                        frame = output.frame
+                    self.wfile.write(b'--FRAME\r\n')
+                    self.send_header('Content-Type', 'image/jpeg')
+                    self.send_header('Content-Length', len(frame))
+                    self.end_headers()
+                    self.wfile.write(frame)
+                    self.wfile.write(b'\r\n')
+            except Exception as e:
+                logging.warning(
+                    'Removed streaming client %s: %s',
+                    self.client_address, str(e))
+        else:
+            self.send_error(404)
+            self.end_headers()
+
+
+class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
+    allow_reuse_address = True
+    daemon_threads = True
 
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
-    def __init__(self, camera, streamer_output, fps=15, streaming_resolution='1120x840', port=8000):
+    def __init__(self, camera, streamer_output, port=8000):
         self.camera = camera
         self.streamer_output=streamer_output
-        self.fps = fps
-        self.streaming_resolution = streaming_resolution
-        self.server_port = port
-        self.server_ip = self._socket_setup()
-        self.request_handlers = None
+        self.port = port
 
     # Set up the request handlers for tornado.
-    def _setup_request_handlers(self):
-        parent = self
-
-        # Handler for the javascript of the streaming page.
-        class JSHandler(tornado.web.RequestHandler):
-            def check_origin(self, origin):
-                return True
-
-            def get(self):
-                self.write(Template(get_file_content('web/index.js')).substitute({'ip': parent.server_ip, 'port': parent.server_port, 'fps': parent.fps}))
-
-        self.request_handlers = [
-            (r"/ws/", WebSocketHandler),
-            (r"/index.js", JSHandler),
-            (r"/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(get_exec_dir(), "web/static/")})
-        ]
-
-    # Set up the web socket.
-    def _socket_setup(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 0))
-        server_ip = s.getsockname()[0]
-        return server_ip
-
+   
     # Start streaming.
     def start(self):
-        self._setup_request_handlers()
         try:
             # Create the stream and detection buffers.
             self.streamer_output.start()
-
-            # Create and loop the tornado application.
-            application = tornado.web.Application(self.request_handlers)
-            application.listen(self.server_port)
-            loop = tornado.ioloop.IOLoop.current()
-            print("Streamer started on http://{}:{}".format(self.server_ip, self.server_port))
-            loop.start()
-
+            address = ('', self.port)
+            server = StreamingServer(address, StreamingHandler)
+            server.serve_forever()
         except KeyboardInterrupt:
             self.camera.close()
-            loop.stop()
