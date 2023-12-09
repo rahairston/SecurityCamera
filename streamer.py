@@ -96,7 +96,7 @@ class Streamer:
                     stream = conn.makefile("wb")
                     filestream = FileOutput(stream)
                     filestream.start()
-                    self.camera.encoder.output = [self.recorder_output, filestream]
+                    self.camera.encoders.output = [self.recorder_output, filestream]
                     filestream.connectiondead = lambda _: event.set()  # noqa
                     event.wait()
             # self.streamer_output.start()
