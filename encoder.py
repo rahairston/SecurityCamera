@@ -25,7 +25,7 @@ class Encoder:
             outputs.append(self.recorder_output)
         
         if streamer_active:
-            self.streamer_output = FileOutput(StreamingOutput())
+            self.streamer_output = FileOutput()
             outputs.append(self.streamer_output)
 
         self.encoder.output = outputs

@@ -94,10 +94,9 @@ class Streamer:
                     event = threading.Event()
                     conn, addr = tup
                     stream = conn.makefile("wb")
-                    filestream = FileOutput(stream)
-                    filestream.start()
-                    self.camera.encoders.output = [self.recorder_output, filestream]
-                    filestream.connectiondead = lambda _: event.set()  # noqa
+                    self.streamer_output.fileoutput = stream 
+                    self.streamer_output.start()
+                    self.streamer_output.connectiondead = lambda _: event.set()  # noqa
                     event.wait()
             # self.streamer_output.start()
             # address = ('', self.port)
