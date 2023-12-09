@@ -90,13 +90,16 @@ if __name__ == '__main__':
     camera_HFlip = stored_data['camera_hFlip']
     camera_denoise = stored_data['camera_denoise']
     annotate_time = stored_data['annotate_time']
+    tuning = Picamera2.load_tuning_file("imx708_noir.json")
 
     # Create and configure the camera.
-    camera = Picamera2()
+    camera = Picamera2(tuning=tuning)
     video_config = camera.create_video_configuration(
         main={"size": camera_resolution, "format": "RGB888"},lores={"size": detection_resolution, "format": "YUV420"},
         transform=Transform(hflip=camera_HFlip, vflip=camera_vFlip)
     )
+    micro = int((1 / camera_fps) * 1000000)
+    video_config["controls"]["FrameDurationLimits"] = (micro, micro)
     camera.configure(video_config)
     night_mode(camera)
 
@@ -175,5 +178,6 @@ if __name__ == '__main__':
         wait_for_internet()
         stream_resolution = tuple_from_resolution(stored_data["stream_resolution"])
         streamer = Streamer(camera=camera,
-                            streamer_output=encoder.streamer_output)
+                            streamer_output=encoder.streamer_output,
+                            recorder_output=encoder.recorder_output)
         streamer.start()

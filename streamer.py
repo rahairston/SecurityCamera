@@ -71,10 +71,11 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 
 # Class that is responsible for streaming the camera footage to the web-page.
 class Streamer:
-    def __init__(self, camera, streamer_output, port=8000):
+    def __init__(self, camera, streamer_output,recorder_output, port=8000):
         self.camera = camera
         self.streamer_output=streamer_output
         self.port = port
+        self.recorder_output=recorder_output
 
     def get_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -85,11 +86,24 @@ class Streamer:
     def start(self):
         try:
             # Create the stream and detection buffers.
-            self.streamer_output.start()
-            address = ('', self.port)
-            sv = StreamingServer(address, StreamingHandler)
-            sv.output = self.streamer_output.fileoutput
-            sv.web_page = PAGE.format(self.get_ip(), self.port)
-            sv.serve_forever()
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                sock.bind(("0.0.0.0", 10001))
+                sock.listen()
+                while tup := sock.accept():
+                    event = threading.Event()
+                    conn, addr = tup
+                    stream = conn.makefile("wb")
+                    filestream = FileOutput(stream)
+                    filestream.start()
+                    self.camera.encoder.output = [self.recorder_output, filestream]
+                    filestream.connectiondead = lambda _: event.set()  # noqa
+                    event.wait()
+            # self.streamer_output.start()
+            # address = ('', self.port)
+            # sv = StreamingServer(address, StreamingHandler)
+            # sv.output = self.streamer_output.fileoutput
+            # sv.web_page = PAGE.format(self.get_ip(), self.port)
+            # sv.serve_forever()
         except KeyboardInterrupt:
             self.camera.close()
