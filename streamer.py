@@ -10,7 +10,7 @@ import socketserver
 import socket
 from http import server
 from threading import Condition
-from picamera2.encoders import JpegEncoder
+import threading
 from picamera2.outputs import FileOutput
 
 PAGE = """\
