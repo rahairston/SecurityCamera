@@ -126,7 +126,7 @@ class Storage:
                 folder_to_delete_date = str(today - days_ago)
                 folder_to_delete = os.path.join(recordings_output_path, folder_to_delete_date)
 
-                if os.path.exists(folder_to_delete)
+                if os.path.exists(folder_to_delete):
                     for item in os.listdir(folder_to_delete):
                         os.remove(os.path.join(folder_to_delete, item))
                     
