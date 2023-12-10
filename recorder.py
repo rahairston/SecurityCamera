@@ -11,6 +11,7 @@ import numpy as np
 class Recorder:
     def __init__(self, camera, storage, recorder_output,
                  temporary_recordings_output_path="./temp_recordings/",
+                 motion_threshold = 7,
                  record_seconds_after_motion=12, max_recording_seconds=600, 
                  ffmpeg_path="/usr/bin/ffmpeg", convert_h264_to_mp4=True):
         self.camera = camera
@@ -19,6 +20,7 @@ class Recorder:
         self.record_seconds_after_motion = record_seconds_after_motion
         self.max_recording_seconds = max_recording_seconds
         self.timer = 0
+        self.motion_threshold = motion_threshold
         self.ffmpeg_path = ffmpeg_path
         self.convert_h264_to_mp4 = convert_h264_to_mp4
 
@@ -36,7 +38,7 @@ class Recorder:
                 # Measure pixels differences between current and
                 # previous frame
                 mse = np.square(np.subtract(cur, prev)).mean()
-                if mse > 7:
+                if mse > self.motion_threshold:
                     print("New Motion", mse)
                     self.report_motion()
             prev = cur
