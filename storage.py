@@ -9,10 +9,11 @@ import os
 
 # Class responsible for storing the recordings. Either locally or on another device on the network.
 class Storage:
-    def __init__(self, storage_option='local', recordings_output_path='./recordings/', max_local_storage_capacity=5):
+    def __init__(self, storage_option='local', recordings_output_path='./recordings/', max_local_storage_capacity=5, max_days_stored=14):
         self.storage_option = storage_option
         self.recordings_output_path = recordings_output_path
         self.max_local_storage_capacity = max_local_storage_capacity
+        self.max_days_stored = max_days_stored
         self.transfer_port = 5005
         # Start making room for the video's be saved.
         threading.Thread(target=self._make_room, daemon=True).start()
@@ -87,6 +88,7 @@ class Storage:
 
     # Deletes old recordings if we're running out of storage capacity.
     def _make_room(self):
+        today = datetime.date.today()
         while True:
             # Convert Gb to b.
             max_folder_size = 1000000000 * self.max_local_storage_capacity
@@ -117,4 +119,20 @@ class Storage:
                 del files[0]
                 folder_size -= deleted_size
                 print("File ", files[0][0], " Deleted because there wasn't enough space.")
+
+            # Cleaning up old folders at midnight of new day
+            if today != datetime.date.today():
+                days_ago = datetime.timedelta(days=self.max_days_stored)
+                folder_to_delete_date = str(today - days_ago)
+                folder_to_delete = os.path.join(recordings_output_path, folder_to_delete_date)
+
+                if os.path.exists(folder_to_delete)
+                    for item in os.listdir(folder_to_delete):
+                        os.remove(os.path.join(folder_to_delete, item))
+                    
+                    os.rmdir(folder_to_delete)
+
+                # Setting up new day to track
+                today = datetime.date.today()
+
             time.sleep(10)
