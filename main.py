@@ -90,10 +90,9 @@ if __name__ == '__main__':
     camera_HFlip = stored_data['camera_hFlip']
     camera_denoise = stored_data['camera_denoise']
     annotate_time = stored_data['annotate_time']
-    tuning = Picamera2.load_tuning_file("imx708_noir.json")
 
     # Create and configure the camera.
-    camera = Picamera2(tuning=tuning)
+    camera = Picamera2()
     video_config = camera.create_video_configuration(
         main={"size": camera_resolution, "format": "RGB888"},lores={"size": detection_resolution, "format": "YUV420"},
         transform=Transform(hflip=camera_HFlip, vflip=camera_vFlip)
