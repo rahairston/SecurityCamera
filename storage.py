@@ -124,7 +124,7 @@ class Storage:
             if today != datetime.date.today():
                 days_ago = datetime.timedelta(days=self.max_days_stored)
                 folder_to_delete_date = str(today - days_ago)
-                folder_to_delete = os.path.join(recordings_output_path, folder_to_delete_date)
+                folder_to_delete = os.path.join(self.recordings_output_path, folder_to_delete_date)
 
                 if os.path.exists(folder_to_delete):
                     for item in os.listdir(folder_to_delete):
