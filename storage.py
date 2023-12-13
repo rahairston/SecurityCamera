@@ -9,7 +9,7 @@ import os
 
 # Class responsible for storing the recordings. Either locally or on another device on the network.
 class Storage:
-    def __init__(self, storage_option='local', recordings_output_path='./recordings/', max_local_storage_capacity=5, max_days_stored=14):
+    def __init__(self, storage_option='local', recordings_output_path='./recordings/', max_local_storage_capacity=5, max_days_stored=7):
         self.storage_option = storage_option
         self.recordings_output_path = recordings_output_path
         self.max_local_storage_capacity = max_local_storage_capacity
