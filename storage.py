@@ -120,19 +120,27 @@ class Storage:
                 folder_size -= deleted_size
                 print("File ", files[0][0], " Deleted because there wasn't enough space.")
 
+            def clean_old_folder(path):
+                if os.path.exists(path):
+                    for item in os.listdir(path):
+                        os.remove(os.path.join(path, item))
+                    
+                    os.rmdir(path)
+
             # Cleaning up old folders at midnight of new day
             if today != datetime.date.today():
-                days_ago = datetime.timedelta(days=self.max_days_stored)
-                folder_to_delete_date = str(today - days_ago)
-                folder_to_delete = os.path.join(self.recordings_output_path, folder_to_delete_date)
-
-                if os.path.exists(folder_to_delete):
-                    for item in os.listdir(folder_to_delete):
-                        os.remove(os.path.join(folder_to_delete, item))
-                    
-                    os.rmdir(folder_to_delete)
-
                 # Setting up new day to track
                 today = datetime.date.today()
+
+                days_ago = datetime.timedelta(days=self.max_days_stored)
+                old_date = today - days_ago
+                folder_to_delete_date = str(old_date)
+                for item in os.listdir(self.recordings_output_path):
+                    folder_date = datetime.datetime.strptime(item, '%Y-%m-%d')
+                    if folder_date.date() <= old_date:
+                        folder_to_delete = os.path.join(self.recordings_output_path, item)
+                        clean_old_folder(folder_to_delete)
+
+
 
             time.sleep(10)
