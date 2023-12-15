@@ -6,8 +6,9 @@ Wants=network-online.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/python /home/%i/SecurityCamera/main.py
+User=%i
 Restart=always
 RestartSec=30
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
