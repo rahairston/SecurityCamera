@@ -88,7 +88,7 @@ class Storage:
 
     # Deletes old recordings if we're running out of storage capacity.
     def _make_room(self):
-        today = datetime.date.today()
+        today = None # Forces a run on start in case of a restart on a new day
         while True:
             # Convert Gb to b.
             max_folder_size = 1000000000 * self.max_local_storage_capacity
@@ -134,7 +134,6 @@ class Storage:
 
                 days_ago = datetime.timedelta(days=self.max_days_stored)
                 old_date = today - days_ago
-                folder_to_delete_date = str(old_date)
                 for item in os.listdir(self.recordings_output_path):
                     folder_date = datetime.datetime.strptime(item, '%Y-%m-%d')
                     if folder_date.date() <= old_date:
