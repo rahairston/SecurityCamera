@@ -1,0 +1,13 @@
+[Unit]
+Description=Systemd service for turning on the security camera.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /home/%i/SecurityCamera/main.py
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
