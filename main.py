@@ -90,6 +90,9 @@ if __name__ == '__main__':
     camera_HFlip = stored_data['camera_hFlip']
     camera_denoise = stored_data['camera_denoise']
     annotate_time = stored_data['annotate_time']
+    file_prefix = ""
+    if "file_prefix" in stored_data:
+        file_prefix = stored_data["file_prefix"]
 
     # Create and configure the camera.
     camera = Picamera2()
