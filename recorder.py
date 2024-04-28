@@ -60,10 +60,7 @@ class Recorder:
                               + '-' + str(datetime.datetime.now())[17:19]
         if not os.path.isdir(os.path.join(get_exec_dir(), self.temporary_recordings_output_path)):
             os.mkdir(os.path.join(get_exec_dir(), self.temporary_recordings_output_path))
-        prefix = self.storage.prefix
-        if prefix != "":
-            prefix = prefix+"_"
-        output_file_name = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, prefix, current_time_string) + ".h264"
+        output_file_name = os.path.join(get_exec_dir(), self.temporary_recordings_output_path, current_time_string) + ".h264"
         self.delayed_recording_stream.fileoutput = output_file_name
         self.delayed_recording_stream.start()
         print('Started recording '+output_file_name)
