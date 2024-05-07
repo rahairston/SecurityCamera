@@ -28,21 +28,31 @@ class Storage:
     def _store_recording(self, file_path):
         current_date = str(datetime.date.today())
         file_name = file_path.split("/")[-1]
-        if not os.path.isdir(os.path.join(get_exec_dir(), self.recordings_output_path)):
-            os.mkdir(os.path.join(get_exec_dir(), self.recordings_output_path))
-
-        rec_dir_path = os.path.join(get_exec_dir(), self.recordings_output_path, current_date)
-        # Create a folder for the specific date if there isn't one already.
-        if not os.path.isdir(rec_dir_path):
-            os.mkdir(rec_dir_path)
-
-        output_file_path = os.path.join(rec_dir_path, file_name)
         
         # Try moving the recording to the recordings directory. Delete file if this operation fails.
-        try:
-            shutil.move(file_path, output_file_path)
-            print("Stored {} in local storage.".format(file_name))
-        except Exception as e:
+        count = 0
+        success = False
+        while count < 10 and not success:
+            try:
+                if not os.path.isdir(os.path.join(get_exec_dir(), self.recordings_output_path)):
+                    os.mkdir(os.path.join(get_exec_dir(), self.recordings_output_path))
+
+                rec_dir_path = os.path.join(get_exec_dir(), self.recordings_output_path, current_date)
+                # Create a folder for the specific date if there isn't one already.
+                if not os.path.isdir(rec_dir_path):
+                    os.mkdir(rec_dir_path)
+
+                output_file_path = os.path.join(rec_dir_path, file_name)
+                shutil.move(file_path, output_file_path)
+                print("Stored {} in local storage.".format(file_name))
+                success = True
+                count = 11
+            except Exception as e:
+                print(e)
+                print("{} could not be put into local storage, trying again in 5 seconds.".format(file_name))
+                time.sleep(5)
+                count = count + 1
+        if not success:
             os.remove(file_path)
             print("Removed {}. Could not be put into local storage.".format(file_name))
 
